@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Information</title>
+    <style>
+        .topBar {
+            display: flex;
+            text-align: center;
+            background-color: blue;
+            color: gold;
+        }
+        #accountName {
+            margin: 0;
+            margin-right: auto;
+        }
+        #tabName {
+            margin: 0;
+            margin-right: auto;
+        }
+        .menu {
+            position: relative;
+            display: inline-block;
+            width: 100px;
+            padding-top: 10px;
+            padding-right:10px;
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
+        }
+
+        .menuContent {
+            display: none;
+            position: absolute;
+            top: 85%; 
+            margin-top: 5px;
+            background-color: white;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            padding: 10px;
+            z-index: 1;
+            border-radius: 4px;
+        }
+        .menu:hover .menuContent {
+            display: block;
+        }
+        .menuContent:hover .menuContent {
+            display: block;
+        }
+        .menuButtons {
+            margin-top: 5px;
+            background-color: rgb(255,255,255);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            padding: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        #title {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="topBar">
+        <h1 id="accountName">name</h1>
+        <h1 id="tabName">Account Info</h1>
+        <div class = "menu">
+            --Menu--
+            <div class="menuContent">
+                <button class= "menuButtons" onclick="location.href='home.html'">Home</button>
+                <button class= "menuButtons" onclick="location.href='newTransaction.html'">New Transaction</button>
+                <button class= "menuButtons" onclick="location.href='transactionHistory.html'">Transaction History</button>
+                <button class= "menuButtons" onclick="location.href='index.html'">Log Out</button>
+            </div>
+        </div>
+    </div>
+    <h1 id="title">name Account Info</h1>
+    
+</body>
+</html>
