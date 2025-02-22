@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transaction History</title>
+    <style>
+		.topBar {
+		    display: flex;
+		    justify-content: center;
+		    align-items: center;
+		    background-color: rgb(9, 45, 125);
+		    color: gold;
+		    position: relative;
+		}
+
+		#accountName {
+		    margin: 0;
+		    position: absolute;
+		    left: 10px; 
+		}
+
+		#tabName {
+		    margin: 0;
+		}
+
+		.menu {
+		    position: absolute;
+		    right: 5px; 
+		    display: inline-block;
+		    width: 100px;
+		    padding-top: 5px;
+			padding-bottom: 5px;
+		    cursor: pointer;
+		    border: none;
+		    border-radius: 4px;
+			justify-content: center;
+			align-items: center;
+		}
+
+		.menuContent {
+		    display: none;
+		    position: absolute;
+		    top: 85%;
+		    left: 50%;
+		    transform: translateX(-50%);
+		    margin-top: 5px;
+		    background-color: white;
+		    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+		    padding: 10px;
+		    z-index: 1;
+		    border-radius: 4px;
+		    text-align: center;
+		}
+
+        .menu:hover .menuContent {
+            display: block; 
+        }
+        .menuContent:hover .menuContent {
+            display: block;
+        }
+        .menuButtons {
+            margin-top: 5px;
+            background-color: rgb(255,255,255);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            padding: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+		.filteringOptions {
+			text-align: center;
+			justify-items: center;
+		}
+		.filterButtons {
+		    background-color: white;
+		    color: black;
+		    border: 1px solid gray;
+			cursor: pointer;
+			margin-right:10px;
+			margin-left:10px;
+		}
+
+		.filterButtons.active {
+		    background-color: rgb(9, 45, 125);
+		    color: gold;
+		}
+        #title {
+            text-align: center;
+        }
+		table {
+            border-collapse: collapse;
+            width: 80%;
+            margin: 20px auto;
+			margin-top: 30px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+		.filterDatePopup {
+	        display: none;
+	        position:absolute;
+	        top: 25%;
+	        bottom: 25%;
+	        left: 30%;
+	        right: 30%;
+	        background-color: white;
+	        padding: 20px;
+	        border-radius: 8px;
+	        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+	        justify-content: center;
+	    }
+	    .filterDatePopup:target {
+	        display: block;
+	    }
+		.filterTypePopup {
+	        display: none;
+	        position:absolute;
+	        top: 25%;
+	        bottom: 25%;
+	        left: 30%;
+	        right: 30%;
+	        background-color: white;
+	        padding: 20px;
+	        border-radius: 8px;
+	        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+	        justify-content: center;
+	    }
+	    .filterTypePopup:target {
+	        display: block;
+	    }
+		.popupBar {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #xButton {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width:40px;
+            height:40px;
+            cursor:pointer;
+        }
+		
+	    .filterDetails {
+	        display: flex;
+	        flex-direction: column; 
+	        align-items: center; 
+	        justify-content: center;
+	        gap: 10px;
+	        padding: 20px;
+	    }
+
+	    .filterDetails h3 {
+	        margin: 0; 
+	    }
+
+	    .filterDetails input, .filterDetails select {
+	        width: 80%;
+	        max-width: 400px; 
+	        padding: 10px; 
+	    }
+
+	    .filterDetails button {
+	        background-color: gold;
+	        color: rgb(29, 82, 188);
+	        border: none;
+	        border-radius: 4px; 
+	        cursor: pointer; 
+	        width: 80%; 
+			height: 30px;
+	    }
+
+	    .filterDetails button:hover {
+	        background-color: rgb(255, 200, 0); 
+	    }
+
+	    .filterDetails input::placeholder, .filterDetails select::placeholder {
+	        color: #aaa;
+	        font-size: 14px;
+	    }
+			
+		.editDepositPopup {
+	        display: none;
+	        position:absolute;
+	        top: 22%;
+	        bottom: 22%;
+	        left: 30%;
+	        right: 30%;
+	        background-color: white;
+	        padding: 20px;
+	        border-radius: 8px;
+	        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+	        justify-content: center;
+	    }
+	    .editDepositPopup:target {
+	        display: block;
+	    }
+		.editWithdrawalPopup {
+	        display: none;
+	        position:absolute;
+	        top: 22%;
+	        bottom: 22%;
+	        left: 30%;
+	        right: 30%;
+	        background-color: white;
+	        padding: 20px;
+	        border-radius: 8px;
+	        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+	        justify-content: center;
+	    }
+	    .editWithdrawalPopup:target {
+	        display: block;
+	    }
+		
+		.popupBar {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #updateXButton {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width:40px;
+            height:40px;
+            cursor:pointer;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .transactionDetails {
+            display:block;
+            margin-bottom:10px;
+            height:40px;
+            font-size:larger;
+        }
+		
+		.updateDetails input, .updateDetails select{
+			margin-bottom: 15px;
+		}
+        #updateDepositEnterButton {
+            cursor: pointer;
+            font-size:larger;
+        }
+		#updateWithdrawalEnterButton {
+            cursor: pointer;
+            font-size:larger;
+        }
+	</style>
+	<script>
+	        let accountInfo = {};
+			//Calls the web mapping /getName and /getBalance and puts information onto page when page is loaded
+	        function fetchAccountData() {
+	            // Fetch account name
+				fetch('/getName')  
+			        .then(response => response.json())  
+			        .then(data => {
+						const maxLength = 15;
+				        let accountName = data.name;
+				        if (accountName.length > maxLength) {
+				            accountName = accountName.substring(0, maxLength) + "...";
+				        }
+				        document.getElementById('accountName').innerText = accountName;
+			        })
+			        .catch(error => {
+			            document.getElementById('accountName').innerText = "Error loading name";
+			        });
+				fetch('/getBalance')  
+			        .then(response => response.json()) 
+			        .then(data => {
+						if(parseFloat(data.balance) < 0){
+							document.getElementById('currentBalance').style.color = '#FF0000';
+						}
+						else{
+							document.getElementById('currentBalance').style.color = 'black';
+						}
+			            document.getElementById('currentBalance').innerText = "Current Balance: " + data.balance;
+			        })
+			        .catch(error => {
+			            document.getElementById('currentBalance').innerText = "Error loading balance";
+			        });
+	        }
+			
+			/*
+			*Calls the web mapping /getAllTransactions
+			*Creates a table in body
+			*Inputs all transaction information into the table
+			*/
+			function fetchAllTransactions(button){
+				highlightSelectedButton(button);
+				const tableBody = document.querySelector('tbody');
+				while (tableBody.firstChild) {
+				    tableBody.removeChild(tableBody.firstChild);
+				}
+				fetch('/getAllTransactions')
+					.then(response => response.json()) 
+					.then(data => {
+		                const tableBody = document.querySelector('#transactionTable tbody');
+		                data.forEach((transaction, index) => {
+							const row = document.createElement('tr');
+							
+							if (index === 0) {
+				                const startingBalanceCell = document.createElement('td');
+				                startingBalanceCell.textContent = transaction;
+				                startingBalanceCell.colSpan = 6; 
+								startingBalanceCell.style.textAlign = 'center';
+				                row.appendChild(startingBalanceCell);
+								tableBody.appendChild(startingBalanceCell);
+				            } 
+							else {
+			                    const [date, type, amount, description] = transaction.split('|'); 
+			                    
+			                    
+			                    const dateCell = document.createElement('td');
+			                    dateCell.textContent = date;
+			                    row.appendChild(dateCell);
+		
+			                    const typeCell = document.createElement('td');
+			                    typeCell.textContent = type;
+			                    row.appendChild(typeCell);
+		
+			                    const amountCell = document.createElement('td');
+			                    amountCell.textContent = amount;
+			                    row.appendChild(amountCell);
+								
+								const descriptionCell = document.createElement('td');
+								const descriptionButton = document.createElement('button');
+								descriptionButton.textContent = 'Description';
+								descriptionButton.style.cursor = 'pointer';
+
+								const popupBox = document.createElement('div');
+								popupBox.textContent = description; 
+								popupBox.style.position = 'absolute';
+								popupBox.style.backgroundColor = '#f9f9f9'; 
+								popupBox.style.border = '1px solid #ccc';
+								popupBox.style.padding = '8px'; 
+								popupBox.style.borderRadius = '4px'; 
+								popupBox.style.boxShadow = '2px 2px 5px rgba(0, 0, 0, 0.2)'; 
+								popupBox.style.display = 'none';
+								popupBox.style.zIndex = '1000'; 
+
+								document.body.appendChild(popupBox);
+								descriptionButton.dataset.description = description;
+
+								descriptionButton.addEventListener('mouseenter', (event) => {
+								    const buttonRect = event.target.getBoundingClientRect();
+								    popupBox.style.display = 'block';
+								    popupBox.style.top = `${buttonRect.top + window.scrollY}px`; 
+								    popupBox.style.left = `${buttonRect.right + window.scrollX}px`;
+								});
+
+								descriptionButton.addEventListener('mouseleave', () => {
+								    popupBox.style.display = 'none';
+								});
+
+								descriptionCell.appendChild(descriptionButton);
+								row.appendChild(descriptionCell);
+
+								const editCell = document.createElement('td');
+								const editButton = document.createElement('button');
+								editButton.textContent = 'Edit';
+								editButton.onclick = (event) => editFunction(event);
+								editButton.style.cursor = 'pointer';
+								editCell.appendChild(editButton);
+								row.appendChild(editCell);
+	
+								const deleteCell = document.createElement('td');
+								const deleteButton = document.createElement('button');
+								deleteButton.textContent = 'Delete'; 
+								deleteButton.onclick = (event) => deleteFunction(event);
+								deleteButton.style.cursor = 'pointer';
+								deleteCell.appendChild(deleteButton);
+								row.appendChild(deleteCell);
+								
+								
+								
+			                    tableBody.appendChild(row);
+							}
+		                });
+		            })
+		            .catch(error => {
+		                console.error('Error fetching transactions:', error);
+		            }); 
+			}
+			/*
+			*Calls the web mapping /filteredTransactionsDate
+			*Creates a table in body
+			*Inputs date filtered transaction information into the table
+			*/
+			function fetchDateTransactions(){
+				highlightSelectedButton(document.getElementById('filterDateButton'));
+				const tableBody = document.querySelector('tbody');
+				while (tableBody.firstChild) {
+				    tableBody.removeChild(tableBody.firstChild);
+				}			
+				const params = {
+				    startDate: document.getElementById('startDate').value,
+				    endDate: document.getElementById('endDate').value,
+				};
+				const queryString = new URLSearchParams(params).toString();
+				const url = `/filteredTransactionsDate?${queryString}`;
+				fetch(url)
+					.then(response => response.json()) 
+					.then(data => {
+			            const tableBody = document.querySelector('#transactionTable tbody');
+			            data.forEach(transaction => {
+			                const [date, type, amount, description] = transaction.split('|');
+			                
+			                const row = document.createElement('tr');
+			                
+			                const dateCell = document.createElement('td');
+			                dateCell.textContent = date;
+			                row.appendChild(dateCell);
+
+			                const typeCell = document.createElement('td');
+			                typeCell.textContent = type;
+			                row.appendChild(typeCell);
+
+			                const amountCell = document.createElement('td');
+			                amountCell.textContent = amount;
+			                row.appendChild(amountCell);
+							
+							const descriptionCell = document.createElement('td');
+							const descriptionButton = document.createElement('button');
+							descriptionButton.textContent = 'Description';
+							descriptionButton.style.cursor = 'pointer';
+
+							const popupBox = document.createElement('div');
+							popupBox.textContent = description; 
+							popupBox.style.position = 'absolute';
+							popupBox.style.backgroundColor = '#f9f9f9'; 
+							popupBox.style.border = '1px solid #ccc';
+							popupBox.style.padding = '8px'; 
+							popupBox.style.borderRadius = '4px'; 
+							popupBox.style.boxShadow = '2px 2px 5px rgba(0, 0, 0, 0.2)'; 
+							popupBox.style.display = 'none';
+							popupBox.style.zIndex = '1000'; 
+
+							document.body.appendChild(popupBox);
+
+							descriptionButton.addEventListener('mouseenter', (event) => {
+							    const buttonRect = event.target.getBoundingClientRect();
+							    popupBox.style.display = 'block';
+							    popupBox.style.top = `${buttonRect.top + window.scrollY}px`; 
+							    popupBox.style.left = `${buttonRect.right + window.scrollX}px`;
+							});
+
+							descriptionButton.addEventListener('mouseleave', () => {
+							    popupBox.style.display = 'none';
+							});
+
+							descriptionCell.appendChild(descriptionButton);
+							row.appendChild(descriptionCell);
+
+							
+							const editCell = document.createElement('td');
+							const editButton = document.createElement('button');
+							editButton.textContent = 'Edit'; 
+							editButton.onclick = (event) => editFunction(event);
+							editButton.style.cursor = 'pointer';
+							editCell.appendChild(editButton);
+							row.appendChild(editCell);
+
+							const deleteCell = document.createElement('td');
+							const deleteButton = document.createElement('button');
+							deleteButton.textContent = 'Delete'; 
+							deleteButton.onclick = (event) => deleteFunction(event);
+							deleteButton.style.cursor = 'pointer';
+							deleteCell.appendChild(deleteButton);
+							row.appendChild(deleteCell);
+							
+			                tableBody.appendChild(row);
+			            });
+			        })
+			        .catch(error => {
+			            console.error('Error fetching transactions:', error);
+			        });
+			}
+			
+			/*
+			*calls the web mapping /filteredTransactionsType
+			*creates a table in body
+			*inputs type filtered transaction information into the table
+			*/
+			function fetchTypeTransactions(){
+				highlightSelectedButton(document.getElementById('filterTypeButton'));
+				const tableBody = document.querySelector('tbody');
+				while (tableBody.firstChild) {
+				    tableBody.removeChild(tableBody.firstChild);
+				}
+				const params = {
+				    type: document.getElementById('filterType').value,
+				};
+				const queryString = new URLSearchParams(params).toString();
+				const url = `/filteredTransactionsType?${queryString}`;
+				fetch(url)
+					.then(response => response.json()) 
+					.then(data => {
+			            const tableBody = document.querySelector('#transactionTable tbody');
+			            data.forEach(transaction => {
+			                const [date, type, amount, description] = transaction.split('|');
+			                
+			                const row = document.createElement('tr');
+			                
+			                const dateCell = document.createElement('td');
+			                dateCell.textContent = date;
+			                row.appendChild(dateCell);
+
+			                const typeCell = document.createElement('td');
+			                typeCell.textContent = type;
+			                row.appendChild(typeCell);
+
+			                const amountCell = document.createElement('td');
+			                amountCell.textContent = amount;
+			                row.appendChild(amountCell);
+							
+							const descriptionCell = document.createElement('td');
+							const descriptionButton = document.createElement('button');
+							descriptionButton.textContent = 'Description';
+							descriptionButton.style.cursor = 'pointer';
+
+							const popupBox = document.createElement('div');
+							popupBox.textContent = description; 
+							popupBox.style.position = 'absolute';
+							popupBox.style.backgroundColor = '#f9f9f9'; 
+							popupBox.style.border = '1px solid #ccc';
+							popupBox.style.padding = '8px'; 
+							popupBox.style.borderRadius = '4px'; 
+							popupBox.style.boxShadow = '2px 2px 5px rgba(0, 0, 0, 0.2)'; 
+							popupBox.style.display = 'none';
+							popupBox.style.zIndex = '1000'; 
+
+							document.body.appendChild(popupBox);
+
+							descriptionButton.addEventListener('mouseenter', (event) => {
+							    const buttonRect = event.target.getBoundingClientRect();
+							    popupBox.style.display = 'block';
+							    popupBox.style.top = `${buttonRect.top + window.scrollY}px`; 
+							    popupBox.style.left = `${buttonRect.right + window.scrollX}px`;
+							});
+
+							descriptionButton.addEventListener('mouseleave', () => {
+							    popupBox.style.display = 'none';
+							});
+
+							descriptionCell.appendChild(descriptionButton);
+							row.appendChild(descriptionCell);
+
+							
+							const editCell = document.createElement('td');
+							const editButton = document.createElement('button');
+							editButton.textContent = 'Edit'; 
+							editButton.onclick = (event) => editFunction(event);
+							editButton.style.cursor = 'pointer';
+							editCell.appendChild(editButton);
+							row.appendChild(editCell);
+
+							const deleteCell = document.createElement('td');
+							const deleteButton = document.createElement('button');
+							deleteButton.textContent = 'Delete'; 
+							deleteButton.onclick = (event) => deleteFunction(event);
+							deleteButton.style.cursor = 'pointer';
+							deleteCell.appendChild(deleteButton);
+							row.appendChild(deleteCell);
+							
+			                tableBody.appendChild(row);
+			            });
+			        })
+			        .catch(error => {
+			            console.error('Error fetching transactions:', error);
+			        }); 
+			}
+			
+			/*
+			*calls the web mapping /filteredTransactionsDeposits
+			*creates a table in body
+			*inputs deposit filtered transaction information into the table
+			*/
+			function fetchDeposits(button){
+				highlightSelectedButton(button);
+				const tableBody = document.querySelector('tbody');
+				while (tableBody.firstChild) {
+				    tableBody.removeChild(tableBody.firstChild);
+				} 				
+				fetch('/filteredTransactionsDeposits')
+					.then(response => response.json()) 
+					.then(data => {
+			            const tableBody = document.querySelector('#transactionTable tbody');
+			            data.forEach(transaction => {
+			                const [date, type, amount, description] = transaction.split('|');
+			                
+			                const row = document.createElement('tr');
+			                
+			                const dateCell = document.createElement('td');
+			                dateCell.textContent = date;
+			                row.appendChild(dateCell);
+
+			                const typeCell = document.createElement('td');
+			                typeCell.textContent = type;
+			                row.appendChild(typeCell);
+
+			                const amountCell = document.createElement('td');
+			                amountCell.textContent = amount;
+			                row.appendChild(amountCell);
+							
+							const descriptionCell = document.createElement('td');
+							const descriptionButton = document.createElement('button');
+							descriptionButton.textContent = 'Description';
+							descriptionButton.style.cursor = 'pointer';
+
+							const popupBox = document.createElement('div');
+							popupBox.textContent = description; 
+							popupBox.style.position = 'absolute';
+							popupBox.style.backgroundColor = '#f9f9f9'; 
+							popupBox.style.border = '1px solid #ccc';
+							popupBox.style.padding = '8px'; 
+							popupBox.style.borderRadius = '4px'; 
+							popupBox.style.boxShadow = '2px 2px 5px rgba(0, 0, 0, 0.2)'; 
+							popupBox.style.display = 'none';
+							popupBox.style.zIndex = '1000'; 
+
+							document.body.appendChild(popupBox);
+
+							descriptionButton.addEventListener('mouseenter', (event) => {
+							    const buttonRect = event.target.getBoundingClientRect();
+							    popupBox.style.display = 'block';
+							    popupBox.style.top = `${buttonRect.top + window.scrollY}px`; 
+							    popupBox.style.left = `${buttonRect.right + window.scrollX}px`;
+							});
+
+							descriptionButton.addEventListener('mouseleave', () => {
+							    popupBox.style.display = 'none';
+							});
+
+							descriptionCell.appendChild(descriptionButton);
+							row.appendChild(descriptionCell);
+
+							
+							const editCell = document.createElement('td');
+							const editButton = document.createElement('button');
+							editButton.textContent = 'Edit'; 
+							editButton.onclick = (event) => editFunction(event);
+							editButton.style.cursor = 'pointer';
+							editCell.appendChild(editButton);
+							row.appendChild(editCell);
+
+							const deleteCell = document.createElement('td');
+							const deleteButton = document.createElement('button');
+							deleteButton.textContent = 'Delete'; 
+							deleteButton.onclick = (event) => deleteFunction(event);
+							deleteButton.style.cursor = 'pointer';
+							deleteCell.appendChild(deleteButton);
+							row.appendChild(deleteCell);
+							
+			                tableBody.appendChild(row);
+			            });
+			        })
+			        .catch(error => {
+			            console.error('Error fetching transactions:', error);
+			        }); 
+			}
+			
+			/*
+			*calls the web mapping /filteredTransactionsWithdrawals
+			*creates a table in body
+			*inputs withdrawal filtered transaction information into the table
+			*/
+			function fetchWithdrawals(button){
+				highlightSelectedButton(button);
+				const tableBody = document.querySelector('tbody');
+				while (tableBody.firstChild) {
+				    tableBody.removeChild(tableBody.firstChild);
+				}				
+				fetch('/filteredTransactionsWithdrawals')
+					.then(response => response.json()) 
+					.then(data => {
+			            const tableBody = document.querySelector('#transactionTable tbody');
+			            data.forEach(transaction => {
+			                const [date, type, amount, description] = transaction.split('|');
+			                
+			                const row = document.createElement('tr');
+			                
+			                const dateCell = document.createElement('td');
+			                dateCell.textContent = date;
+			                row.appendChild(dateCell);
+
+			                const typeCell = document.createElement('td');
+			                typeCell.textContent = type;
+			                row.appendChild(typeCell);
+
+			                const amountCell = document.createElement('td');
+			                amountCell.textContent = amount;
+			                row.appendChild(amountCell);
+							
+							const descriptionCell = document.createElement('td');
+							const descriptionButton = document.createElement('button');
+							descriptionButton.textContent = 'Description';
+							descriptionButton.style.cursor = 'pointer';
+
+							const popupBox = document.createElement('div');
+							popupBox.textContent = description; 
+							popupBox.style.position = 'absolute';
+							popupBox.style.backgroundColor = '#f9f9f9'; 
+							popupBox.style.border = '1px solid #ccc';
+							popupBox.style.padding = '8px'; 
+							popupBox.style.borderRadius = '4px'; 
+							popupBox.style.boxShadow = '2px 2px 5px rgba(0, 0, 0, 0.2)'; 
+							popupBox.style.display = 'none';
+							popupBox.style.zIndex = '1000'; 
+
+							document.body.appendChild(popupBox);
+
+							descriptionButton.addEventListener('mouseenter', (event) => {
+							    const buttonRect = event.target.getBoundingClientRect();
+							    popupBox.style.display = 'block';
+							    popupBox.style.top = `${buttonRect.top + window.scrollY}px`; 
+							    popupBox.style.left = `${buttonRect.right + window.scrollX}px`;
+							});
+
+							descriptionButton.addEventListener('mouseleave', () => {
+							    popupBox.style.display = 'none';
+							});
+
+							descriptionCell.appendChild(descriptionButton);
+							row.appendChild(descriptionCell);
+
+							
+							const editCell = document.createElement('td');
+							const editButton = document.createElement('button');
+							editButton.textContent = 'Edit'; 
+							editButton.onclick = (event) => editFunction(event);
+							editButton.style.cursor = 'pointer';
+							editCell.appendChild(editButton);
+							row.appendChild(editCell);
+
+							const deleteCell = document.createElement('td');
+							const deleteButton = document.createElement('button');
+							deleteButton.textContent = 'Delete'; 
+							deleteButton.onclick = (event) => deleteFunction(event);
+							deleteButton.style.cursor = 'pointer';
+							deleteCell.appendChild(deleteButton);
+							row.appendChild(deleteCell);
+											
+			                tableBody.appendChild(row);
+			            });
+			        })
+			        .catch(error => {
+			            console.error('Error fetching transactions:', error);
+			        }); 
+			}
+			
+			/*
+			* Take previous transaction information from the table
+			* Opens popup based on if it was a deposit or withdrawal
+			* Calls web mapping /updateTransaction
+			* Creates error if edit fails
+			*/
+			function editFunction(event) {
+			    const button = event.target;
+			    const cell = button.parentElement;
+			    const row = cell.parentElement;
+			    const cells = row.children;
+
+			    const oldDate = cells[0].textContent;
+			    const oldType = cells[1].textContent;
+			    const oldAmount = cells[2].textContent;
+				const oldDescription = cells[3].firstChild.dataset.description;
+
+			    // If it's a deposit (positive amount), show the deposit popup
+			    if (oldAmount.startsWith("+")) {
+			        const popup = document.getElementById('editDepositPopup');
+			        popup.style.display = 'block';
+			        document.getElementById('prevInfoDep').innerText = `Previous Info- Date: ${oldDate}, Type: ${oldType}, Amount: ${oldAmount}`;
+
+			        const form = document.getElementById('editDepositForm');
+			        form.removeEventListener('submit', handleDepositSubmit);
+			        form.addEventListener('submit', handleDepositSubmit);
+
+			        function handleDepositSubmit(event) {
+			            event.preventDefault(); 
+
+			            const newDate = document.getElementById('newDepositDate').value;
+			            const newType = document.getElementById('newDepositType').value;
+			            const newAmount = document.getElementById('newDepositAmount').value;
+						const newDescription = document.getElementById('newDepositDescription').value;
+						
+			            if (newDate && newType && newAmount) {
+			                const params = {
+			                    date: oldDate,
+			                    type: oldType,
+			                    amount: oldAmount,
+								description: oldDescription,
+			                    newDate: newDate,
+			                    newType: newType,
+			                    newAmount: newAmount,
+								newDescription: newDescription 
+			                };
+
+			                fetch('/updateTransaction', {
+			                    method: 'POST',
+			                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+			                    body: new URLSearchParams(params).toString()
+			                })
+			                    .then(response => response.text())
+			                    .then(responseText => {
+			                        if (responseText === "transactionFailure") {
+			                            alert("Transaction update failed.");
+			                        } else if (responseText === "transactionHistory") {
+			                            document.getElementById('newDepositDate').value = '';
+			                            document.getElementById('newDepositType').value = '';
+			                            document.getElementById('newDepositAmount').value = '';
+										document.getElementById('newDepositDescription').value = '';
+
+			                            popup.style.display = 'none';
+			                            location.reload();
+			                        }
+			                    })
+			                    .catch(error => {
+			                        console.error("Error updating transaction:", error);
+			                        alert("An error occurred during the update.");
+			                    });
+			            } else {
+			                alert("Please fill out all fields.");
+			            }
+			        }
+			    }
+			    // If it's a withdrawal (negative amount), show the withdrawal popup
+			    else {
+			        const popup = document.getElementById('editWithdrawalPopup');
+			        popup.style.display = 'block';
+			        document.getElementById('prevInfoWith').innerText = `Previous Info- Date: ${oldDate}, Type: ${oldType}, Amount: ${oldAmount}`;
+
+			        const form = document.getElementById('editWithdrawalForm');
+			        form.removeEventListener('submit', handleWithdrawSubmit); 
+			        form.addEventListener('submit', handleWithdrawSubmit); 
+
+			        function handleWithdrawSubmit(event) {
+			            event.preventDefault(); 
+
+			            const newDate = document.getElementById('newWithdrawalDate').value;
+			            const newType = document.getElementById('newWithdrawalType').value;
+			            const newAmount = document.getElementById('newWithdrawalAmount').value;
+						const newDescription = document.getElementById('newWithdrawalDescription').value;
+
+			            if (newDate && newType && newAmount) {
+			                const params = {
+			                    date: oldDate,
+			                    type: oldType,
+			                    amount: oldAmount,
+								description: oldDescription,
+			                    newDate: newDate,
+			                    newType: newType,
+			                    newAmount: "-" + newAmount,
+								newDescription: newDescription  
+			                };
+
+			                fetch('/updateTransaction', {
+			                    method: 'POST',
+			                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+			                    body: new URLSearchParams(params).toString()
+			                })
+			                    .then(response => response.text())
+			                    .then(responseText => {
+			                        if (responseText === "transactionFailure") {
+			                            alert("Transaction update failed.");
+			                        } else if (responseText === "transactionHistory") {
+			                            document.getElementById('newWithdrawalDate').value = '';
+			                            document.getElementById('newWithdrawalType').value = '';
+			                            document.getElementById('newWithdrawalAmount').value = '';
+										document.getElementById('newWithdrawalDescription').value = '';
+
+			                            popup.style.display = 'none';  
+			                            location.reload(); 
+			                        }
+			                    })
+			                    .catch(error => {
+			                        console.error("Error updating transaction:", error);
+			                        alert("An error occurred during the update.");
+			                    });
+			            } else {
+			                alert("Please fill out all fields.");
+			            }
+			        }
+			    }
+			}
+
+			
+			//Calls web mapping /deleteTransaction with the information from the table row on which the delete button is on
+			function deleteFunction(event) {
+				const button = event.target;
+
+			    const cell = button.parentElement;
+
+			    const row = cell.parentElement;
+
+			    const cells = row.children;
+				
+				const params = {
+				    date: cells[0].textContent,
+				    type: cells[1].textContent,
+					amount: cells[2].textContent,
+					description: cells[3].firstChild.dataset.description
+				};
+				
+				const body = new URLSearchParams(params).toString();
+
+			    fetch('/deleteTransaction', {
+			        method: 'POST',
+			        headers: {
+			            'Content-Type': 'application/x-www-form-urlencoded'
+			        },
+			        body: body
+			    })
+			    .then(response => {
+			        if (!response.ok) {
+			            throw new Error('Failed to delete transaction');
+			        }
+			        row.remove();
+					fetch('/getBalance')  
+				        .then(response => response.json()) 
+				        .then(data => {
+							if(parseFloat(data.balance) < 0){
+								document.getElementById('currentBalance').style.color = '#FF0000';
+							}
+							else{
+								document.getElementById('currentBalance').style.color = 'black';
+							}
+				            document.getElementById('currentBalance').innerText = "Current Balance: " + data.balance;
+				        })
+				        .catch(error => {
+				            document.getElementById('currentBalance').innerText = "Error loading balance";
+				        });
+			    })
+			    .catch(error => {
+			        console.error('Error deleting transaction:', error);
+			    });
+				
+			}
+			
+			function highlightSelectedButton(selectedButton) {
+			    const buttons = document.querySelectorAll('.filterButtons');
+			    buttons.forEach(button => button.classList.remove('active'));
+
+			    selectedButton.classList.add('active');
+			}
+			
+			function closeDepPopup() {
+				const popup = document.getElementById('editDepositPopup');
+				popup.style.display = 'none';
+			}
+			
+			function closeWithPopup() {
+				const popup = document.getElementById('editWithdrawalPopup');
+				popup.style.display = 'none';
+			}
+
+	        window.onload = function() {
+	            fetchAccountData();
+				fetchAllTransactions(document.getElementById('allTransactionsButton'));
+	        }
+	    </script>
+</head>
+<body>
+    <div class="topBar">
+        <h1 id="accountName">Loading...</h1>
+        <h1 id="tabName">Transaction History</h1>
+        <div class = "menu">
+            --Menu--
+            <div class="menuContent">
+                <button class= "menuButtons" onclick="location.href='/home'">Home</button>
+                <button class= "menuButtons" onclick="location.href='/newTransaction'">New Transaction</button>
+				<button class= "menuButtons" onclick="location.href='/reports'">Reports</button>
+                <button class= "menuButtons" onclick="location.href='/accountInfo'">Account Info</button>
+				<button class= "menuButtons" onclick="location.href='/directions'">Help</button>
+				<form action="/logOut" method="post"><button class="menuButtons" type="submit">Log Out</button></form>            
+            </div>
+        </div>
+    </div>
+	
+	<h1 id="currentBalance" style="text-align: center;"></h1>
+	
+	<div class = "filteringOptions">
+		<h2>Filtering Options:</h2>
+        <div class="filterContent">
+            <button class= "filterButtons" id="allTransactionsButton" onclick="fetchAllTransactions(this); location.href='#'"><h4>All Transactions</h4></button>
+            <button class= "filterButtons" id="filterDepositsButton" onclick="fetchDeposits(this); location.href='#'"><h4>Deposits</h4></button>
+            <button class= "filterButtons" id="filterWithdrawalsButton" onclick="fetchWithdrawals(this); location.href='#'"><h4>Withdrawals</h4></button>
+            <button class= "filterButtons" id="filterDateButton" onclick="location.href='#filterDatePopup'"><h4>Filter by Date</h4></button>
+			<button class= "filterButtons" id="filterTypeButton" onclick="location.href='#filterTypePopup'"><h4>Filter by Type</h4></button>
+        </div>
+    </div>
+	
+	<div id = "filterDatePopup" class = "filterDatePopup">
+        <div class="popupBar">
+            <h1 id = "filterTitle">Filter By Date</h1>
+            <button id="xButton" onclick="location.href='#'">X</button>
+        </div>
+		<div class="filterDetails">
+			<h3>Start Date:</h3>
+			<input id="startDate" type="date" placeholder="Start Date" name="startDate" required>
+			<h3>End Date:</h3>
+			<input id="endDate" type="date" placeholder="End Date" name="endDate" required>
+	        <button id="enterButton" onclick="fetchDateTransactions(); location.href='#'">Enter</button>
+		</div>
+    </div>
+	
+	<div id = "filterTypePopup" class = "filterTypePopup">
+        <div class="popupBar">
+            <h1 id = "filterTitle">Filter By Type</h1>
+            <button id="xButton" onclick="location.href='#'">X</button>
+        </div>
+		<div class="filterDetails">
+			<select id="filterType" name="filterType" required>
+	            <option value="" disabled selected>Type:</option>
+				<option value="food">Food</option>
+	            <option value="gas">Gas</option>
+				<option value="rent">Rent</option>
+	            <option value="income">Income</option>
+				<option value="friends">Friends</option>
+	            <option value="other">Other</option>
+	        </select>
+	        <button id="enterButton" onclick="fetchTypeTransactions(); location.href='#'">Enter</button>
+		</div>
+    </div>
+		
+	<div id="editDepositPopup" class="editDepositPopup">
+		<div class="popupBar">
+            <h1 id="updateTransactionTitle">Edit Deposit</h1>
+            <button id="updateXButton" onclick=closeDepPopup()>X</button>
+        </div>
+        <h3 id="prevInfoDep"></h3>
+        <div class="updateDetails">
+			<form id="editDepositForm">
+				<input id="newDepositDate" type="date" placeholder="New Date" name="newDate" required>
+	            <select id="newDepositType" class="transactionDetails" name="newType" required>
+	                <option value="" disabled selected>Type:</option>
+	                <option value="income">Income</option>
+	                <option value="friends">Friends</option>
+	                <option value="other">Other</option>
+	            </select>
+	            <input id="newDepositAmount" class="transactionDetails" type="number" step="0.01" min="0" placeholder="Amount" name="newAmount" required>
+				<input id="newDepositDescription" class="transactionDetails" type="text" placeholder="Description" name="newDescription">
+	            <button id="updateDepositEnterButton" type="submit">Enter</button>
+			</form>
+        </div>
+	</div>
+	
+	<div id="editWithdrawalPopup" class="editWithdrawalPopup">
+		<div class="popupBar">
+            <h1 id="updateTransactionTitle">Edit Withdrawal</h1>
+            <button id="updateXButton" onclick="closeWithPopup()">X</button>
+        </div>
+        <h3 id="prevInfoWith"></h3>
+        <div class="updateDetails">
+			<form id="editWithdrawalForm">
+				<input id="newWithdrawalDate" type="date" placeholder="Start Date" name="newDate" required>
+	            <select id="newWithdrawalType" class="transactionDetails" name="newType" required>
+	                <option value="" disabled selected>Type:</option>
+	                <option value="food">Food</option>
+	                <option value="gas">Gas</option>
+	                <option value="rent">Rent</option>
+	                <option value="friends">Friends</option>
+	                <option value="other">Other</option>
+	            </select>
+	            <input id="newWithdrawalAmount" class="transactionDetails" type="number" step="0.01" min="0" placeholder="Amount" name="newAmount" required>
+				<input id="newWithdrawalDescription" class="transactionDetails" type="text" placeholder="Description" name="newDescription">
+				<button id="updateWithdrawalEnterButton" type="submit">Enter</button>
+			</form>
+        </div>
+	</div>
+	
+	<table id="transactionTable">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Amount</th>
+				<th>Description</th>
+				<th>Edit</th>
+				<th>Delete</th>
+            </tr>
+        </thead>
+        <tbody>
+            
+        </tbody>
+    </table>
+    
+</body>
+</html>
