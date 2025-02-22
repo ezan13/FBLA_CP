@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Help</title>
+    <style>
+		.topBar {
+		    display: flex;
+		    justify-content: center;
+		    align-items: center;
+		    background-color:  rgb(9, 45, 125);
+		    color: gold;
+		    position: relative;
+		}
+
+		#accountName {
+		    margin: 0;
+		    position: absolute;
+		    left: 10px; 
+		}
+
+		#tabName {
+		    margin: 0;
+		}
+
+		.menu {
+		    position: absolute;
+		    right: 5px; 
+		    display: inline-block;
+		    width: 100px;
+		    padding-top: 5px;
+			padding-bottom: 5px;
+		    cursor: pointer;
+		    border: none;
+		    border-radius: 4px;
+			justify-content: center;
+			align-items: center;
+		}
+
+		.menuContent {
+		    display: none;
+		    position: absolute;
+		    top: 85%;
+		    left: 50%;
+		    transform: translateX(-50%);
+		    margin-top: 5px;
+		    background-color: white;
+		    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+		    padding: 10px;
+		    z-index: 1;
+		    border-radius: 4px;
+		    text-align: center;
+		}
+
+        .menu:hover .menuContent {
+            display: block; 
+        }
+        .menuContent:hover .menuContent {
+            display: block;
+        }
+        .menuButtons {
+            margin-top: 5px;
+            background-color: rgb(255,255,255);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            padding: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+    </style>
+	<script>
+		function fetchAccountData() {
+            // Fetch account name
+			fetch('/getName')
+		        .then(response => response.json()) 
+		        .then(data => {
+					const maxLength = 15;
+			        let accountName = data.name;
+			        if (accountName.length > maxLength) {
+			            accountName = accountName.substring(0, maxLength) + "...";
+			        }
+			        document.getElementById('accountName').innerText = accountName;
+		        })
+		        .catch(error => {
+		            document.getElementById('accountName').innerText = "Error loading name";
+		        });
+        }
+		window.onload = function() {
+            fetchAccountData();
+        }
+	</script>
+</head>
+<body>
+    <div class="topBar">
+        <h1 id="accountName">Loading...</h1>
+        <h1 id="tabName">Help</h1>
+        <div class = "menu">
+            --Menu--
+            <div class="menuContent">
+                <button class= "menuButtons" onclick="location.href='/home'">Home</button>
+                <button class= "menuButtons" onclick="location.href='/newTransaction'">New Transaction</button>
+                <button class= "menuButtons" onclick="location.href='/transactionHistory'">Transaction History</button>
+				<button class= "menuButtons" onclick="location.href='/reports'">Reports</button>
+				<button class= "menuButtons" onclick="location.href='/accountInfo'">Account Info</button>
+				<form action="/logOut" method="post"><button class="menuButtons" type="submit">Log Out</button></form>            
+            </div>
+        </div>
+    </div>
+	
+	<embed id="directionspdf" src="/files/fbladirections2.pdf" type="application/pdf" width="100%" height="600px" style="margin-top: 20px;">
+
+</body>
+</html>
