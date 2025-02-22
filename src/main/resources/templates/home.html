@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <style>
+		.topBar {
+		    display: flex;
+		    justify-content: center;
+		    align-items: center;
+		    background-color:  rgb(9, 45, 125);
+		    color: gold;
+		    position: relative;
+		}
+
+		#accountName {
+		    margin: 0;
+		    position: absolute;
+		    left: 10px; 
+		}
+		#tabName {
+		    margin: 0;
+		}
+		.menu {
+		    position: absolute;
+		    right: 5px; 
+		    display: inline-block;
+		    width: 100px;
+		    padding-top: 5px;
+			padding-bottom: 5px;
+		    cursor: pointer;
+		    border: none;
+		    border-radius: 4px;
+			justify-content: center;
+			align-items: center;
+		}
+
+		.menuContent {
+		    display: none;
+		    position: absolute;
+		    top: 85%;
+		    left: 50%;
+		    transform: translateX(-50%);
+		    margin-top: 5px;
+		    background-color: white;
+		    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+		    padding: 10px;
+		    z-index: 1;
+		    border-radius: 4px;
+		    text-align: center;
+		}
+
+        .menu:hover .menuContent {
+            display: block; 
+        }
+        .menuContent:hover .menuContent {
+            display: block;
+        }
+        .menuButtons {
+            margin-top: 5px;
+            background-color: rgb(255,255,255);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            padding: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .buttons{
+            margin-top:70px;
+            display: flex;
+            align-items: center;
+        }
+        #newTransactionButton {
+            background-color: gold;
+            width: 48%;
+            height: 200px;
+            cursor: pointer;
+        }
+        #transactionHistoryButton {
+            margin-left: 4%;
+            background-color: gold;
+            width: 48%;
+            height: 200px;
+            cursor: pointer;
+        }
+		.qna {
+			display: flex;
+		    justify-content: center;
+			flex-direction: column;
+		    align-items: center;
+			gap: 10px;
+		    background-color: rgb(0, 0, 127);
+		    color: gold;
+		    position: relative;
+			margin-top: 60px;
+		}
+		.qna input, .qna button {
+		    width: 80%; 
+		    max-width: 400px; 
+		    padding: 10px; 
+		    font-size: 16px; 
+		    border-radius: 4px; 
+		    border: 1px solid #ccc;
+		}
+
+		.qna button {
+		    background-color: gold;
+		    color: rgb(9, 45, 125);
+		    border: none;
+		    cursor: pointer;
+			margin-bottom: 10px;
+		}
+
+		.qna button:hover {
+		    background-color: rgb(255,200,0);
+		}
+		.response-row {
+			display: flex;
+		    justify-content: center;
+			flex-direction: column;
+		    align-items: center;
+			font-size: larger;
+			gap: 5px;
+		}
+        .authorBox {
+            margin-top: 70px;
+			display: flex;
+	        flex-direction: column; 
+	        align-items: center; 
+	        justify-content: center;
+			line-height: 1.2;
+        }
+    </style>
+    
+    <script>
+        let accountInfo = {};
+
+        function fetchAccountData() {
+            // Fetch account name
+			fetch('/getName')
+		        .then(response => response.json()) 
+		        .then(data => {
+					const maxLength = 15;
+			        let accountName = data.name;
+			        if (accountName.length > maxLength) {
+			            accountName = accountName.substring(0, maxLength) + "...";
+			        }
+			        document.getElementById('accountName').innerText = accountName;
+		        })
+		        .catch(error => {
+		            document.getElementById('accountName').innerText = "Error loading name";
+		        });
+        }
+		
+		/*
+		*Creates functionality for the Q&A
+		*Calls /helpDesk with the input
+		*Creates buttons based on what the user may be trying to access
+		*/
+		document.addEventListener('DOMContentLoaded', () => {
+		    const question = document.getElementById('question');
+		    const qnaSubmit = document.getElementById('qnaSubmit');
+		    
+		    if (question && qnaSubmit) {
+		        qnaSubmit.addEventListener('click', function () {
+		            const params = {
+		                question: question.value, // Use `.value` to get input field content
+		            };
+
+		            const queryString = new URLSearchParams(params).toString();
+		            const url = `/helpDesk?${queryString}`;
+		            
+		            fetch(url)
+		                .then(response => response.json())
+		                .then(data => {
+		                    const responseBox = document.querySelector('#responses');
+		                    
+		                    // Clear previous responses
+		                    responseBox.innerHTML = '';
+
+		                    data.forEach(response => {
+		                        const row = document.createElement('div'); // Use a div or other appropriate element
+		                        row.classList.add('response-row'); // Optional: Add a class for styling
+								
+		                        if (response === "deposit") {
+		                            const redirectButton = document.createElement('button');
+		                            redirectButton.textContent = "New Deposit";
+		                            redirectButton.onclick = () => location.href = '/newTransaction#depositPopup';
+		                            
+		                            row.textContent = "Make a New Deposit: ";
+		                            row.appendChild(redirectButton);
+		                        } 
+								else if (response === "withdrawal") {
+		                            const redirectButton = document.createElement('button');
+		                            redirectButton.textContent = "New Withdrawal";
+		                            redirectButton.onclick = () => location.href = '/newTransaction#withdrawalPopup';
+		                            
+		                            row.textContent = "Make a New Withdrawal: ";
+		                            row.appendChild(redirectButton);
+		                        } 
+								else if (response === "transactionHistory") {
+		                            const redirectButton = document.createElement('button');
+		                            redirectButton.textContent = "Transaction History";
+		                            redirectButton.onclick = () => location.href = '/transactionHistory';
+		                            
+		                            row.textContent = "View Transaction History: ";
+		                            row.appendChild(redirectButton);
+		                        } 
+								else if (response === "accountInfo") {
+		                            const redirectButton = document.createElement('button');
+		                            redirectButton.textContent = "Account Information";
+		                            redirectButton.onclick = () => location.href = '/accountInfo';
+		                            
+		                            row.textContent = "View/Update Your Account Information: ";
+		                            row.appendChild(redirectButton);
+		                        } 
+								else if (response === "reports") {
+		                            const redirectButton = document.createElement('button');
+		                            redirectButton.textContent = "Reports";
+		                            redirectButton.onclick = () => location.href = '/reports';
+		                            
+		                            row.textContent = "View Reports of Income and Spendings: ";
+		                            row.appendChild(redirectButton);
+		                        } 
+								
+								else if (response === "home") {
+		                            const redirectButton = document.createElement('button');
+		                            redirectButton.textContent = "Home Page";
+		                            redirectButton.onclick = () => location.reload();
+		                            
+		                            row.textContent = "Reload Home Page: ";
+		                            row.appendChild(redirectButton);
+		                        } 
+								
+
+		                        responseBox.appendChild(row);
+		                    });
+		                })
+		                .catch(error => {
+		                    console.error('Error fetching transactions:', error);
+		                });
+		        });
+		    } else {
+		        console.error('QNA box not found');
+		    }
+		});
+
+		
+
+        window.onload = function() {
+            fetchAccountData();
+        }
+    </script>
+</head>
+<body>
+    <div class="topBar">
+        <h1 id="accountName">Loading...</h1>
+		<script>
+		    
+		</script>
+        <h1 id="tabName">Home</h1>
+        <div class="menu">
+            --Menu--
+            <div class="menuContent">
+				<button class= "menuButtons" onclick="location.href='/reports'">Reports</button>
+                <button class="menuButtons" onclick="location.href='/accountInfo'">Account Info</button>
+				<button class= "menuButtons" onclick="location.href='/directions'">Help</button>
+				<form action="/logOut" method="post"><button class="menuButtons" type="submit">Log Out</button></form>            
+            </div>
+        </div>
+    </div>
+    <div class="buttons">
+        <button id="newTransactionButton" onclick="location.href='/newTransaction'">
+            <h1>New Transaction</h1>
+        </button>
+        <button id="transactionHistoryButton" onclick="location.href='/transactionHistory'">
+            <h1>Transaction History</h1>
+        </button>
+    </div>
+	
+	<div class="qna">
+		<h1 id="qnaTitle">Q&A</h1>
+		<input type="text" id="question">
+		<button id="qnaSubmit" type="submit">Enter</button>
+		<table id="responses">
+			<tbody>
+				
+			</tbody>
+		</table>
+	</div>
+	
+    <div class="authorBox">
+        <h1>FBLA- Fumakeya Banking Log Association</h1>
+        <h2>About the Creator</h2>
+        <h3>Creator: Ezan Fumakeya</h3>
+        <h4>Hey everyone! My name is Ezan Fumakeya and I founded the Fumakeya Banking Log Association. I am a junior at 
+            Jordan High School in Katy, Texas and am 16 years old. </h4>
+    </div>
+</body>
+</html>
