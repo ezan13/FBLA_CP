@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports</title>
+    <style>
+		.topBar {
+		    display: flex;
+		    justify-content: center;
+		    align-items: center;
+		    background-color: rgb(9, 45, 125);
+		    color: gold;
+		    position: relative;
+		}
+
+		#accountName {
+		    margin: 0;
+		    position: absolute;
+		    left: 10px; 
+		}
+
+		#tabName {
+		    margin: 0;
+		}
+
+		.menu {
+		    position: absolute;
+		    right: 5px; 
+		    display: inline-block;
+		    width: 100px;
+		    padding-top: 5px;
+			padding-bottom: 5px;
+		    cursor: pointer;
+		    border: none;
+		    border-radius: 4px;
+			justify-content: center;
+			align-items: center;
+		}
+
+		.menuContent {
+		    display: none;
+		    position: absolute;
+		    top: 85%;
+		    left: 50%;
+		    transform: translateX(-50%);
+		    margin-top: 5px;
+		    background-color: white;
+		    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+		    padding: 10px;
+		    z-index: 1;
+		    border-radius: 4px;
+		    text-align: center;
+		}
+
+        .menu:hover .menuContent {
+            display: block; 
+        }
+        .menuContent:hover .menuContent {
+            display: block;
+        }
+        .menuButtons {
+            margin-top: 5px;
+            background-color: rgb(255,255,255);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            padding: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+		.reportOptions {
+			text-align: center;
+			justify-items: center;
+		}
+		.reportButtons {
+		    background-color: white;
+		    color: black;
+		    border: 1px solid gray;
+			cursor: pointer;
+			margin-right:10px;
+			margin-left:10px;
+		}
+
+		.reportButtons.active {
+		    background-color: rgb(9, 45, 125);
+		    color: gold;
+		}
+        
+		.datePopup {
+	        display: none;
+	        position:absolute;
+	        top: 25%;
+	        bottom: 25%;
+	        left: 30%;
+	        right: 30%;
+	        background-color: white;
+			z-index:-1;
+	        padding: 20px;
+	        border-radius: 8px;
+	        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+	        justify-content: center;
+	    }
+	    .datePopup:target {
+	        display: block;
+			z-index:1000;
+	    }
+		
+		.popupBar {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #xButton {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width:40px;
+            height:40px;
+            cursor:pointer;
+        }
+		
+	    .filterDetails {
+	        display: flex;
+	        flex-direction: column; 
+	        align-items: center; 
+	        justify-content: center;
+	        gap: 10px;
+	        padding: 20px;
+	    }
+
+	    .filterDetails h3 {
+	        margin: 0; 
+	    }
+
+	    .filterDetails input, .filterDetails select {
+	        width: 80%;
+	        max-width: 400px; 
+	        padding: 10px; 
+	    }
+
+	    .filterDetails button {
+	        background-color: gold;
+	        color: rgb(29, 82, 188);
+	        border: none;
+	        border-radius: 4px; 
+	        cursor: pointer; 
+	        width: 80%; 
+			height: 30px;
+	    }
+
+	    .filterDetails button:hover {
+	        background-color: rgb(255, 200, 0); 
+	    }
+
+	    .filterDetails input::placeholder, .filterDetails select::placeholder {
+	        color: #aaa;
+	        font-size: 14px;
+	    }	
+		
+		.depAmtBox {
+			display:block;
+	        position:absolute;
+	        top: 30%;
+	        bottom: 15%;
+	        left: 5%;
+	        right: 50%;
+	        padding: 20px;
+	        border-radius: 8px;
+	        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+	        justify-content: center;
+	    }
+		
+		.withAmtBox {
+			display:block;
+	        position:absolute;
+	        top: 30%;
+	        bottom: 15%;
+	        left: 50%;
+	        right: 5%;
+	        padding: 20px;
+	        border-radius: 8px;
+	        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+	        justify-content: center;
+	    }
+		
+		#withAverages {
+			position: absolute;
+		    top: 50%;
+		    left: 55%; 
+		    transform: translateY(-50%); 
+		    white-space: nowrap; 
+		}
+		
+		.depTypeBox {
+			display:block;
+	        position:absolute;
+	        top: 85%;
+	        bottom: -40%;
+	        left: 5%;
+	        right: 50%;
+	        padding: 20px;
+	        border-radius: 8px;
+	        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+	        justify-content: center;
+	    }
+		
+		.withTypeBox {
+			display:block;
+	        position:absolute;
+	        top: 85%;
+	        bottom: -40%;
+	        left: 50%;
+	        right: 5%;
+	        padding: 20px;
+	        border-radius: 8px;
+	        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+	        justify-content: center;
+	    }
+		
+		#depositAmountChart {
+			position: relative;
+		}
+		#withdrawalAmountChart {
+			position: relative;
+		} 
+	</style>
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+	<script>
+		let accountInfo = {};
+		let depositAmountChart = null;
+		let withAmountChart = null;
+		let depositTypeChart = null;
+		let withTypeChart = null;
+		//Calls the web mapping /getName and /getBalance and puts information onto page when page is loaded
+		function fetchAccountData() {
+		    // Fetch account name
+			fetch('/getName')  
+		        .then(response => response.json())  
+		        .then(data => {
+					const maxLength = 15;
+			        let accountName = data.name;
+			        if (accountName.length > maxLength) {
+			            accountName = accountName.substring(0, maxLength) + "...";
+			        }
+			        document.getElementById('accountName').innerText = accountName;
+		        })
+		        .catch(error => {
+		            document.getElementById('accountName').innerText = "Error loading name";
+		        });
+		}
+		function getCurrentDate(){
+			const date = new Date();
+			let day = date.getDate();
+			let month = date.getMonth() + 1;
+			let year = date.getFullYear();
+			let currentDate = year*365.25 + (month/12)*365.25 + day;
+			return currentDate;
+		}
+		
+		function fetchReport(time){
+			let date1;
+			let date2;
+			let endDay;
+			let startDay;
+			if(time === "week"){
+				highlightSelectedButton(document.getElementById('weeklyButton'));
+				endDay = getCurrentDate();
+				startDay = endDay-7;
+				date2 = new Date();
+				date1 = new Date(date2);
+				date1.setDate(date2.getDate() - 7);
+			}	
+			else if(time === "month"){
+				highlightSelectedButton(document.getElementById('monthlyButton'));
+				endDay = getCurrentDate();
+				startDay = endDay-30;
+				date2 = new Date();
+				date1 = new Date(date2);
+				date1.setDate(date2.getDate() - 30);
+			}
+			else if(time==="selectDate"){
+				const input1 = document.getElementById('startDate').value;
+				const input2 = document.getElementById('endDate').value;
+				if (!input1 || !input2) {
+		            alert("Please select both Start and End dates.");
+		            return;
+		        }
+				date1 = new Date(input1);
+				date2 = new Date(input2);
+				if (isNaN(date1) || isNaN(date2)) {
+		            alert("Please enter valid dates.");
+		            return;
+		        }
+				if (date1 > date2) {
+		            alert("Start Date must be before End Date.");
+		            return;
+		        }
+				
+				let day1 = date1.getDate();
+				let month1 = date1.getMonth() + 1;
+				let year1 = date1.getFullYear();
+				startDay = year1*365.25 + (month1/12)*365.25 + day1;
+				let day2 = date2.getDate();
+				let month2 = date2.getMonth() + 1;
+				let year2 = date2.getFullYear();
+				endDay = year2*365.25 + (month2/12)*365.25 + day2;
+				
+				highlightSelectedButton(document.getElementById('dateButton'));
+			}
+			
+			
+			document.getElementById('currentRange').innerText = "Current Date Range: " + (date1.getMonth()+1) + "/" + (date1.getDate()+1) + "/" + date1.getFullYear() + 
+				 " - " + (date2.getMonth()+1) + "/" + (date2.getDate()+1) + "/" + date2.getFullYear();
+			
+			const params = {
+			    startDate: startDay,
+			    endDate: endDay,
+			};
+			const queryString = new URLSearchParams(params).toString();
+			
+			let hasDeposits;
+			let hasWithdrawals;
+			
+			
+			// Creates the reports
+			fetch(`/hasDepositsWithdrawals?${queryString}`)
+				.then(response => response.json())
+			    .then(data => {
+					if (Array.isArray(data) && data.length >= 2) {
+			            hasDeposits = data[0]; 
+			            hasWithdrawals = data[1]; 
+			        }
+					
+					if (depositTypeChart) {depositTypeChart.destroy();}
+					if (depositAmountChart) {depositAmountChart.destroy();}
+					if (withTypeChart) {withTypeChart.destroy();}
+					if (withAmountChart) {withAmountChart.destroy();}
+					
+					if(hasDeposits){
+						
+						fetch(`/getReportAmountDep?${queryString}`)
+						    .then(response => response.json())
+						    .then(data => {
+						        const chartData = [];
+								const backgroundColors = [];
+								const chartLabels = ['Income', 'Friends', 'Other'];
+								const sliceColors = [
+								    'rgb(255, 99, 132)',
+								    'rgb(54, 162, 235)',
+								    'rgb(255, 205, 86)',
+								    'rgb(75, 192, 192)',
+								    'rgb(153, 102, 255)',
+								    'rgb(201, 203, 207)'
+								];
+								
+								data.forEach((item, index) => {
+								    chartData.push(item);
+								    backgroundColors.push(sliceColors[index % sliceColors.length]);
+								});
+								
+						        const pieData = {
+						            labels: chartLabels,
+						            datasets: [{
+						                label: 'Amount deposited',
+						                data: chartData,
+						                backgroundColor: backgroundColors,
+						                hoverOffset: 4
+						            }]
+						        };
+					
+						        const config = {
+						            type: 'pie',
+						            data: pieData,
+									options: {
+								        responsive: false, 
+								        maintainAspectRatio: false,
+								    },
+						        };
+								
+								const canvas = document.getElementById('depositAmountChart');
+								canvas.width = 300; 
+								canvas.height = 300;
+								
+								const ctx = canvas.getContext('2d');
+								document.getElementById('depAmtError').innerText = "";
+								depositAmountChart = new Chart(ctx, config);
+						    })
+						    .catch(error => {
+						        console.error('Error fetching report:', error);
+						    });
+							
+							
+						fetch(`/getReportTypeDep?${queryString}`)
+						    .then(response => response.json())
+						    .then(data => {
+						        const chartData = [];
+								const backgroundColors = [];
+								const chartLabels = ['Income', 'Friends', 'Other'];
+								const sliceColors = [
+								    'rgb(255, 99, 132)',
+								    'rgb(54, 162, 235)',
+								    'rgb(255, 205, 86)',
+								    'rgb(75, 192, 192)',
+								    'rgb(153, 102, 255)',
+								    'rgb(201, 203, 207)'
+								];
+								
+								data.forEach((item, index) => {
+								    chartData.push(item);
+								    backgroundColors.push(sliceColors[index % sliceColors.length]);
+								});
+								
+						        const pieData = {
+						            labels: chartLabels,
+						            datasets: [{
+						                label: 'Deposits made',
+						                data: chartData,
+						                backgroundColor: backgroundColors,
+						                hoverOffset: 4
+						            }]
+						        };
+			
+						        const config = {
+						            type: 'pie',
+						            data: pieData,
+									options: {
+								        responsive: false, 
+								        maintainAspectRatio: false,
+								    },
+						        };
+								
+								const canvas = document.getElementById('depositTypeChart');
+								canvas.width = 300;
+								canvas.height = 300;
+								
+								const ctx = canvas.getContext('2d');
+								document.getElementById('depTypeError').innerText = "";
+								depositTypeChart = new Chart(ctx, config);
+						    })
+						    .catch(error => {
+						        console.error('Error fetching report:', error);
+						    });
+
+							
+					}
+					else{
+						document.getElementById('depAmtError').innerText = "No deposits to display in the given date range";
+						document.getElementById('depTypeError').innerText = "No deposits to display in the given date range";
+					}
+					if(hasWithdrawals){
+						const withAmts = [];
+						const withNums = [];
+
+						// Fetch both reports
+						const fetchAmounts = fetch(`/getReportAmountWith?${queryString}`)
+						    .then(response => response.json())
+						    .then(data => {
+						        const chartData = [];
+						        const backgroundColors = [];
+						        const chartLabels = ['Food', 'Gas', 'Rent', 'Friends', 'Other'];
+						        const sliceColors = [
+						            'rgb(255, 99, 132)',
+						            'rgb(54, 162, 235)',
+						            'rgb(255, 205, 86)',
+						            'rgb(75, 192, 192)',
+						            'rgb(153, 102, 255)',
+						            'rgb(201, 203, 207)'
+						        ];
+
+						        data.forEach((item, index) => {
+						            chartData.push(item);
+						            backgroundColors.push(sliceColors[index % sliceColors.length]);
+						            withAmts.push(item);
+						        });
+
+						        const pieData = {
+						            labels: chartLabels,
+						            datasets: [{
+						                label: 'Amount spent',
+						                data: chartData,
+						                backgroundColor: backgroundColors,
+						                hoverOffset: 4
+						            }]
+						        };
+
+						        const config = {
+						            type: 'pie',
+						            data: pieData,
+						            options: {
+						                responsive: false,
+						                maintainAspectRatio: false, 
+						            },
+						        };
+
+						        const canvas = document.getElementById('withdrawalAmountChart');
+						        canvas.width = 300; 
+						        canvas.height = 300;
+
+						        const ctx = canvas.getContext('2d');
+						        document.getElementById('withAmtError').innerText = "";
+						        withAmountChart = new Chart(ctx, config);
+						    });
+
+						const fetchTypes = fetch(`/getReportTypeWith?${queryString}`)
+						    .then(response => response.json())
+						    .then(data => {
+						        const chartData = [];
+						        const backgroundColors = [];
+						        const chartLabels = ['Food', 'Gas', 'Rent', 'Friends', 'Other'];
+						        const sliceColors = [
+						            'rgb(255, 99, 132)',
+						            'rgb(54, 162, 235)',
+						            'rgb(255, 205, 86)',
+						            'rgb(75, 192, 192)',
+						            'rgb(153, 102, 255)',
+						            'rgb(201, 203, 207)'
+						        ];
+
+						        data.forEach((item, index) => {
+						            chartData.push(item);
+						            backgroundColors.push(sliceColors[index % sliceColors.length]);
+						            withNums.push(item);
+						        });
+
+						        const pieData = {
+						            labels: chartLabels,
+						            datasets: [{
+						                label: 'Withdrawals made',
+						                data: chartData,
+						                backgroundColor: backgroundColors,
+						                hoverOffset: 4
+						            }]
+						        };
+
+						        const config = {
+						            type: 'pie',
+						            data: pieData,
+						            options: {
+						                responsive: false,
+						                maintainAspectRatio: false,
+						            },
+						        };
+
+						        const canvas = document.getElementById('withdrawalTypeChart');
+						        canvas.width = 300;
+						        canvas.height = 300;
+
+						        const ctx = canvas.getContext('2d');
+						        document.getElementById('withTypeError').innerText = "";
+						        withTypeChart = new Chart(ctx, config);
+						    });
+						
+						// Waits until both fetch calls are complete
+						Promise.all([fetchAmounts, fetchTypes])
+						    .then(() => {
+						        const withAverages = [];
+						        let withString = "";
+						        for (let i = 0; i <= 4; i++) {
+									if(withNums[i] === 0){
+										withAverages[i] = 0;
+									}
+									else{
+										withAverages[i] = withAmts[i] / withNums[i];
+									}
+						            
+						        }
+						        withString += "Average spent on food: " + withAverages[0] + "\n";
+						        withString += "Average spent on gas: " + withAverages[1] + "\n";
+						        withString += "Average spent on rent: " + withAverages[2] + "\n";
+						        withString += "Average spent on friends: " + withAverages[3] + "\n";
+						        withString += "Average spent on other: " + withAverages[4];
+						        document.getElementById('withAverages').innerText = withString;
+						    })
+						    .catch(error => {
+						        console.error('Error fetching data:', error);
+						    });
+
+					}
+					else{
+						document.getElementById('withAmtError').innerText = "No withdrawals to display in the given date range";
+						document.getElementById('withTypeError').innerText = "No withdrawals to display in the given date range";
+						document.getElementById('withAverages').innerText = "";
+					}
+			    })
+			    .catch(error => {
+			        console.error('Error fetching report:', error);
+			    });
+			
+				location.href = "#";
+			}
+			
+			
+			
+		function highlightSelectedButton(selectedButton) {
+		    const buttons = document.querySelectorAll('.reportButtons');
+		    buttons.forEach(button => button.classList.remove('active'));
+
+		    selectedButton.classList.add('active');
+		}
+		
+        window.onload = function() {
+            fetchAccountData();
+			fetchReport("week");
+        }
+    </script>
+</head>
+<body>
+    <div class="topBar">
+        <h1 id="accountName">Loading...</h1>
+        <h1 id="tabName">Reports</h1>
+        <div class = "menu">
+            --Menu--
+            <div class="menuContent">
+                <button class= "menuButtons" onclick="location.href='/home'">Home</button>
+                <button class= "menuButtons" onclick="location.href='/newTransaction'">New Transaction</button>
+				<button class= "menuButtons" onclick="location.href='/transactionHistory'">Transaction History</button>
+                <button class= "menuButtons" onclick="location.href='/accountInfo'">Account Info</button>
+				<button class= "menuButtons" onclick="location.href='/directions'">Help</button>
+				<form action="/logOut" method="post"><button class="menuButtons" type="submit">Log Out</button></form>            
+			</div>
+        </div>
+    </div>
+	
+	<div class = "reportOptions">
+		<h2>Report Options:</h2>
+        <div class="reportContent">
+            <button class= "reportButtons" id="weeklyButton" onclick="fetchReport('week')"><h4>Weekly Report</h4></button>
+            <button class= "reportButtons" id="monthlyButton" onclick="fetchReport('month')"><h4>Monthly Report</h4></button>
+            <button class= "reportButtons" id="dateButton" onclick="location.href='#datePopup'"><h4>Select Date Range</h4></button>
+        </div>
+		<h3 id="currentRange">Current Date Range: </h3>
+    </div>
+	
+	<div id = "datePopup" class = "datePopup">
+        <div class="popupBar">
+            <h1 id = "filterTitle">Select Report Dates</h1>
+            <button id="xButton" onclick="location.href='#'">X</button>
+        </div>
+		<div class="filterDetails">
+			<h3>Start Date:</h3>
+			<input id="startDate" type="date" placeholder="Start Date" name="startDate" required>
+			<h3>End Date:</h3>
+			<input id="endDate" type="date" placeholder="End Date" name="endDate" required>
+	        <button id="enterButton" onclick="fetchReport('selectDate'); location.href='#'">Enter</button>
+		</div>
+    </div>   
+	
+	<div>
+		
+		<div id="depAmtBox" class="depAmtBox">
+			<h3>Amounts Deposited:</h3>
+			<h5 id="depAmtError"></h5>
+			<canvas id="depositAmountChart" class="charts"></canvas>
+		</div>
+		
+		<div id="withAmtBox" class="withAmtBox">
+			<h3>Amounts Withdrawn:</h3>
+			<h5 id="withAmtError"></h5>
+			<canvas id="withdrawalAmountChart" class="charts"></canvas>
+			<h5 id="withAverages"></h5>
+		</div>
+		
+		<div id="depTypeBox" class="depTypeBox">
+			<h3>Number of Deposits:</h3>
+			<h5 id="depTypeError"></h5>
+			<canvas id="depositTypeChart" class="charts"></canvas>
+		</div>
+		
+		<div id="withTypeBox" class="withTypeBox">
+			<h3>Number of Withdrawals:</h3>
+			<h5 id="withTypeError"></h5>
+			<canvas id="withdrawalTypeChart" class="charts"></canvas>
+		</div>
+		
+		
+		
+	
+
+	</div> 
+</body>
+</html>
