@@ -1,0 +1,19 @@
+Starting Balance: 100
+02/01/2025|income|+300.0|
+02/05/2025|food|-20.0|Taco Bell
+02/07/2025|gas|-40.0|N/A
+02/08/2025|friends|+15.0|N/A
+02/11/2025|rent|-200.0|N/A
+02/14/2025|income|+400.0|Second paycheck
+02/14/2025|food|-20.0|Taco Bell
+02/16/2025|gas|-40.0|N/A
+02/17/2025|friends|+15.0|Paid back for Taco Bell
+02/17/2025|rent|-200.0|N/A
+02/18/2025|other|-20.0|N/A
+02/19/2025|income|+100.0|Third paycheck
+02/19/2025|food|-10.0|McDonalds
+02/20/2025|gas|-40.0|N/A
+02/20/2025|other|+15.0|extra cash
+02/20/2025|friends|+50.0|Birthday gift
+02/21/2025|rent|-100.0|N/A
+02/22/2025|food|-20.0|Chipotle
