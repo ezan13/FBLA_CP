@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Transaction</title>
+    <style>
+		.topBar {
+		    display: flex;
+		    justify-content: center;
+		    align-items: center;
+		    background-color: rgb(9, 45, 125);
+		    color: gold;
+		    position: relative;
+		}
+
+		#accountName {
+		    margin: 0;
+		    position: absolute;
+		    left: 10px; 
+		}
+
+		#tabName {
+		    margin: 0;
+		}
+
+		.menu {
+		    position: absolute;
+		    right: 5px; 
+		    display: inline-block;
+		    width: 100px;
+		    padding-top: 5px;
+			padding-bottom: 5px;
+		    cursor: pointer;
+		    border: none;
+		    border-radius: 4px;
+			justify-content: center;
+			align-items: center;
+		}
+
+		.menuContent {
+		    display: none;
+		    position: absolute;
+		    top: 85%;
+		    left: 50%;
+		    transform: translateX(-50%);
+		    margin-top: 5px;
+		    background-color: white;
+		    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+		    padding: 10px;
+		    z-index: 1;
+		    border-radius: 4px;
+		    text-align: center;
+		}
+
+        .menu:hover .menuContent {
+            display: block; 
+        }
+        .menuContent:hover .menuContent {
+            display: block;
+        }
+        .menuButtons {
+            margin-top: 5px;
+            background-color: rgb(255,255,255);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            padding: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .buttons{
+            margin-top:60px;
+            display: flex;
+            align-items: center;
+        }
+        #depositButton {
+            background-color: gold;
+            width: 48%;
+            height: 200px;
+            cursor: pointer;
+        }
+        #withdrawalButton {
+            margin-left: 3.3%;
+            background-color: gold;
+            width: 48%;
+            height: 200px;
+            cursor: pointer;
+        }
+
+        .depositPopup {
+            display: none;
+            position:absolute;
+            top: 22%;
+            bottom: 22%;
+            left: 30%;
+            right: 30%;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            justify-content: center;
+        }
+        .depositPopup:target {
+            display: block;
+        }
+        .withdrawalPopup {
+            display: none;
+            position:absolute;
+            top: 22%;
+            bottom: 22%;
+            left: 30%;
+            right: 30%;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            justify-content: center;
+        }
+        .withdrawalPopup:target {
+            display: block;
+        }
+        
+        .transactionBar {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #xButton {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width:40px;
+            height:40px;
+            cursor:pointer;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .transactionDetails {
+            display:block;
+            margin-bottom:10px;
+            height:40px;
+            /* width:80%; */
+            font-size:larger;
+        }
+        #enterButton {
+            cursor: pointer;
+            font-size:larger;
+        }
+    </style>
+	<script>
+	        let accountInfo = {};
+
+	        function fetchAccountData() {
+	            // Fetch account name
+				fetch('/getName')  
+			        .then(response => response.json()) 
+			        .then(data => {
+						const maxLength = 15;
+				        let accountName = data.name;
+				        if (accountName.length > maxLength) {
+				            accountName = accountName.substring(0, maxLength) + "...";
+				        }
+				        document.getElementById('accountName').innerText = accountName;
+			        })
+			        .catch(error => {
+			            document.getElementById('accountName').innerText = "Error loading name";
+			        });
+				// Fetch account balance
+				fetch('/getBalance')  
+			        .then(response => response.json()) 
+			        .then(data => {
+			            document.getElementById('currentBalance').innerText = "Current Balance: " + data.balance;
+						document.getElementById('depositBalance').innerText = "Current Balance: " + data.balance; 
+						document.getElementById('withdrawalBalance').innerText = "Current Balance: " + data.balance;  
+			        })
+			        .catch(error => {
+			            document.getElementById('currentBalance').innerText = "Error loading balance";
+						document.getElementById('depositBalance').innerText = "Error loading balance";
+						document.getElementById('withdrawalBalance').innerText = "Error loading balance";
+			        });
+	        }
+
+	        window.onload = function() {
+	            fetchAccountData();
+	        }
+	    </script>
+</head>
+<body>
+    <div class="topBar">
+        <h1 id="accountName">Loading...</h1>
+        <h1 id="tabName">New Transaction</h1>
+        <div class = "menu">
+            --Menu--
+            <div class="menuContent">
+                <button class= "menuButtons" onclick="location.href='/home'">Home</button>
+                <button class= "menuButtons" onclick="location.href='/transactionHistory'">Transaction History</button>
+				<button class= "menuButtons" onclick="location.href='/reports'">Reports</button>
+                <button class= "menuButtons" onclick="location.href='/accountInfo'">Account Info</button>
+				<button class= "menuButtons" onclick="location.href='/directions'">Help</button>
+				<form action="/logOut" method="post"><button class="menuButtons" type="submit">Log Out</button></form>            
+            </div>
+        </div>
+        
+    </div>
+	
+	<h1 id="currentBalance" style="text-align: center;"></h1>
+	
+    <div class = "buttons"></div>
+        <button id = "depositButton" onclick="location.href='#depositPopup'">
+            <h1>Deposit</h1>
+        </button>
+        <button id = "withdrawalButton" onclick="location.href='#withdrawalPopup'">
+            <h1>Withdrawal</h1>
+        </button>
+    </div>
+	
+
+    <div id = "depositPopup" class = "depositPopup">
+        <div class="transactionBar">
+            <h1 id = "newTransactionTitle">New Deposit</h1>
+            <button id="xButton" onclick="location.href='#'">X</button>
+        </div>
+		<h2 id="depositBalance" style="text-align: center;"></h2>
+        <form action = "/deposit" method="post">
+            <input class="transactionDetails" type="date" placeholder="Date" name="date" required>
+            <select class="transactionDetails" name="type" required>
+                <option value="" disabled selected>Type:</option>
+                <option value="income">Income</option>
+				<option value="friends">Friends</option>
+                <option value="other">Other</option>
+            </select>
+            <input class="transactionDetails" type="number" step="0.01" min="0" placeholder="Amount" name = "amount" required>
+			<input class="transactionDetails" type="text" placeholder="Description" name="description">
+            <button id="enterButton" type="submit">Enter</button>
+        </form>
+    </div>
+
+    <div id = "withdrawalPopup" class = "withdrawalPopup">
+        <div class="transactionBar">
+            <h1 id = "newTransactionTitle">New Withdrawal</h1>
+            <button id="xButton" onclick="location.href='#'">X</button>
+        </div>
+		<h2 id="withdrawalBalance" style="text-align: center;"></h2>
+        <form action = "/withdrawal" method="post">
+            <input class="transactionDetails" type="date" placeholder="Date" name="date" required>
+            <select class="transactionDetails" name="type" required>
+				<option value="" disabled selected>Type:</option>
+                <option value="food">Food</option>
+                <option value="gas">Gas</option>
+				<option value="rent">Rent</option>
+				<option value="friends">Friends</option>
+                <option value="other">Other</option>
+            </select>
+            <input class="transactionDetails" type="number" step="0.01" min="0" placeholder="Amount" name = "amount" required>
+			<input class="transactionDetails" type="text" placeholder="Description" name="description">
+            <button id="enterButton" type="submit">Enter</button>
+        </form>
+    </div>
+    
+</body>
+</html>
