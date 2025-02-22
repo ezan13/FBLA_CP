@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Information</title>
+    <style>
+		.topBar {
+		    display: flex;
+		    justify-content: center;
+		    align-items: center;
+		    background-color:  rgb(9, 45, 125);
+		    color: gold;
+		    position: relative;
+		}
+
+		#accountName {
+		    margin: 0;
+		    position: absolute;
+		    left: 10px; 
+		}
+
+		#tabName {
+		    margin: 0;
+		}
+
+		.menu {
+		    position: absolute;
+		    right: 5px; 
+		    display: inline-block;
+		    width: 100px;
+		    padding-top: 5px;
+			padding-bottom: 5px;
+		    cursor: pointer;
+		    border: none;
+		    border-radius: 4px;
+			justify-content: center;
+			align-items: center;
+		}
+
+		.menuContent {
+		    display: none;
+		    position: absolute;
+		    top: 85%;
+		    left: 50%;
+		    transform: translateX(-50%);
+		    margin-top: 5px;
+		    background-color: white;
+		    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+		    padding: 10px;
+		    z-index: 1;
+		    border-radius: 4px;
+		    text-align: center;
+		}
+
+        .menu:hover .menuContent {
+            display: block; 
+        }
+        .menuContent:hover .menuContent {
+            display: block;
+        }
+        .menuButtons {
+            margin-top: 5px;
+            background-color: rgb(255,255,255);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            padding: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        #title {
+            text-align: center;
+        }
+		.allInformation {
+			text-align: center;
+			justify-content: center;
+		}
+		.namePopup {
+	        display: none;
+	        position:absolute;
+	        top: 25%;
+	        bottom: 25%;
+	        left: 30%;
+	        right: 30%;
+	        background-color: white;
+	        padding: 20px;
+	        border-radius: 8px;
+	        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+	        justify-content: center;
+	    }
+	    .namePopup:target {
+	        display: block;
+	    }
+		.namePopup form {
+			display: flex;
+	        flex-direction: column; 
+	        align-items: center; 
+	        justify-content: center;
+			height: 50%;
+			gap: 10px;
+		}
+		.emailPopup {
+	        display: none;
+	        position:absolute;
+	        top: 25%;
+	        bottom: 25%;
+	        left: 30%;
+	        right: 30%;
+	        background-color: white;
+	        padding: 20px;
+	        border-radius: 8px;
+	        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+	        justify-content: center;
+	    }
+	    .emailPopup:target {
+	        display: block;
+	    }
+		.emailPopup form{
+			display: flex;
+	        flex-direction: column; 
+	        align-items: center; 
+	        justify-content: center;
+			height: 50%;
+			gap: 10px;
+		}
+		.passwordPopup {
+	        display: none;
+	        position:absolute;
+	        top: 25%;
+	        bottom: 25%;
+	        left: 30%;
+	        right: 30%;
+	        background-color: white;
+	        padding: 20px;
+	        border-radius: 8px;
+	        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+	        justify-content: center;
+	    }
+	    .passwordPopup:target {
+	        display: block;
+	    }
+		.passwordPopup form{
+			display: flex;
+	        flex-direction: column; 
+	        align-items: center; 
+	        justify-content: center;
+			height: 70%;
+		}
+		.popupBar {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+		#xButton {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width:40px;
+            height:40px;
+            cursor:pointer;
+        }
+		.popupEntry {
+            display:block;
+            margin-bottom:10px;
+            height:40px;
+            /* width:80%; */
+            font-size:larger;
+        }
+		#passwordPopupEntry {
+            display:block;
+            margin-bottom:10px;
+            height:40px;
+            /* width:80%; */
+            font-size:larger;
+        }
+		#enterButton {
+            cursor: pointer;
+            font-size:larger;
+        }
+		#codes {
+			flex-direction:row; 
+		}
+		.codeEntry {
+			width: 30px;
+			height: 20px;
+			position: relative;
+			display: none;
+		}
+		#submitCode {
+			display: none;
+			width: 70px; 
+		}
+    </style>
+	<script>
+		let isVisible = false;
+		let code = [];
+		let emailVerified = false;
+        function fetchAccountData() {
+            // Fetch account name, email, and password
+			fetch('/getAccountInfo')
+		        .then(response => response.json())
+		        .then(data => {
+					const maxLength = 15;
+			        let accountName = data.name;
+			        if (accountName.length > maxLength) {
+			            accountName = accountName.substring(0, maxLength) + "...";
+			        }
+			        document.getElementById('accountName').innerText = accountName;
+					document.getElementById('accountInfoName').innerText =  "Name: " + data.name;
+					document.getElementById('accountInfoEmail').innerText = "Email: " + data.email;
+		        })
+		        .catch(error => {
+		            document.getElementById('accountName').innerText = "Error loading name";
+					document.getElementById('accountInfoName').innerText = "Error loading name";
+					document.getElementById('accountInfoEmail').innerText = "Error loading email";
+		        });
+			// Fetch account id
+			fetch('/getID')
+		        .then(response => response.json())
+		        .then(data => {
+					document.getElementById('accountInfoID').innerText = "ID: " + data.id;
+		        })
+		        .catch(error => {
+					document.getElementById('accountInfoID').innerText = "Error loading id";
+		        });
+			// Fetch account balance
+			fetch('/getBalance')
+			    .then(response => response.json())
+			    .then(data => {
+					document.getElementById('accountInfoBalance').innerText = "Balance: " + data.balance;
+			    })
+			    .catch(error => {
+					document.getElementById('accountInfoBalance').innerText = "Error loading balance";
+			    });
+        }
+		
+		//Changes toggle password button and hides/shows password
+		function togglePassword() {
+            const passwordField = document.getElementById('accountInfoPassword');
+            const eyeIcon = document.querySelector('.eye-icon');
+
+			if (isVisible) {
+                passwordField.innerText = 'Password: ******'; 
+                eyeIcon.textContent = '👁️'; 
+            } else {
+				fetch('/getPassword')
+				    .then(response => response.json())
+				    .then(data => {
+						document.getElementById('accountInfoPassword').innerText = "Password: " + data.password;
+				    })
+				    .catch(error => {
+						document.getElementById('accountInfoPassword').innerText = "Error loading password";
+				    });
+                eyeIcon.textContent = '🙈';
+            }
+			
+			isVisible = !isVisible;
+        }
+		//Changes toggle password button and hides/shows password
+		function toggleNewPassword() {
+            const passwordField = document.getElementById('passwordPopupEntry');
+            const eyeIcon = document.querySelector('.eye-icon-new');
+
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                eyeIcon.textContent = '🙈';
+            } else {
+                passwordField.type = 'password';
+                eyeIcon.textContent = '👁️';
+            }
+        }
+		document.addEventListener('DOMContentLoaded', () => {
+		    const newEmail = document.getElementById('newEmail');
+		    const sendEmail = document.getElementById('sendEmail');
+
+		    if (sendEmail) {
+		        sendEmail.addEventListener('click', async function () {
+		            if (!newEmail.value) {
+		                alert("Please enter an email address first.");
+		                return;
+		            }
+					const emailLine = "Email: " + newEmail.value;
+					if(emailLine === document.getElementById('accountInfoEmail').innerText){
+						alert("Please enter a new email.");
+						return;
+					}
+
+		            try {
+		                // First fetch: Check if the email is unique
+		                const params = new URLSearchParams({ email: newEmail.value }).toString();
+		                const url = `/emailUnique?${params}`;
+		                const response = await fetch(url);
+		                const data = await response.json();
+
+						if (data === false) {
+		                    alert("Email already in use");
+		                    return; // Stop function execution
+		                }
+
+		                // Second fetch: Send verification email
+		                const params2 = new URLSearchParams({ email: newEmail.value }).toString();
+		                const url2 = `/verificationEmail?${params2}`;
+		                const response2 = await fetch(url2);
+		                const data2 = await response2.json();
+						alert(data2);
+		                if (data2.includes(-1) || data2.length !== 6) {
+		                    alert('There was an error sending the email. Make sure the email is valid.');
+		                    return;
+		                }
+
+		                // Hide send button and show verification inputs
+		                sendEmail.style.display = 'none';
+		                document.getElementById('codeEntry1').style.display = 'inline-block';
+		                document.getElementById('codeEntry2').style.display = 'inline-block';
+		                document.getElementById('codeEntry3').style.display = 'inline-block';
+		                document.getElementById('codeEntry4').style.display = 'inline-block';
+		                document.getElementById('codeEntry5').style.display = 'inline-block';
+		                document.getElementById('codeEntry6').style.display = 'inline-block';
+		                document.getElementById('submitCode').style.display = 'inline-block';
+
+		                code = data2; // Store the verification code
+		            } catch (error) {
+		                alert("There was an error processing your request.");
+		            }
+		        });
+		    }
+		});
+
+
+		
+		document.addEventListener('DOMContentLoaded', () => {
+		    const submitCodeButton = document.getElementById('submitCode');
+
+		    if (submitCodeButton) {
+		        submitCodeButton.addEventListener('click', function () {
+		            const enteredCode = [
+		                document.getElementById('codeEntry1').value,
+		                document.getElementById('codeEntry2').value,
+		                document.getElementById('codeEntry3').value,
+		                document.getElementById('codeEntry4').value,
+		                document.getElementById('codeEntry5').value,
+		                document.getElementById('codeEntry6').value
+		            ].join(''); 
+
+		            const generatedCode = code.join('');
+					
+					if (enteredCode.length !== 6 || enteredCode.includes(' ')) {
+		                alert('Please enter the complete 6-digit code.');
+		                return;
+		            }
+					
+		            if (enteredCode === generatedCode) {
+		                emailVerified = true;
+		                alert('Email verified successfully!');
+		            } else {
+		                alert('Invalid verification code. Please try again.');
+		            }
+		        });
+		    } 
+		});
+		
+		// Stops account creation if the email isn't verified
+		document.addEventListener('DOMContentLoaded', () => {
+		    const form = document.getElementById('emailForm');
+
+		    if (form) {
+		        form.addEventListener('submit', function (event) {
+		            if (!emailVerified) {
+		                event.preventDefault();
+		                alert('Please verify your email before submitting the form.');
+		            }
+		        });
+		    } else {
+		        console.error('Form not found.');
+		    }
+		});
+		
+		//resets email code entry
+		function emailXButton(){
+			location.href='#';
+			sendEmail.style.display = 'block';
+			document.getElementById('newEmail').value = '';
+            document.getElementById('codeEntry1').style.display = 'none';
+            document.getElementById('codeEntry2').style.display = 'none';
+            document.getElementById('codeEntry3').style.display = 'none';
+            document.getElementById('codeEntry4').style.display = 'none';
+            document.getElementById('codeEntry5').style.display = 'none';
+            document.getElementById('codeEntry6').style.display = 'none';
+            document.getElementById('submitCode').style.display = 'none';
+			
+		}
+        window.onload = function() {
+            fetchAccountData();
+        }
+    </script>
+</head>
+<body>
+    <div class="topBar">
+        <h1 id="accountName">Loading...</h1>
+        <h1 id="tabName">Account Info</h1>
+        <div class = "menu">
+            --Menu--
+            <div class="menuContent">
+                <button class= "menuButtons" onclick="location.href='/home'">Home</button>
+                <button class= "menuButtons" onclick="location.href='/newTransaction'">New Transaction</button>
+                <button class= "menuButtons" onclick="location.href='/transactionHistory'">Transaction History</button>
+				<button class= "menuButtons" onclick="location.href='/reports'">Reports</button>
+				<button class= "menuButtons" onclick="location.href='/directions'">Help</button>
+				<form action="/logOut" method="post"><button class="menuButtons" type="submit">Log Out</button></form>            
+            </div>
+        </div>
+    </div>
+    
+	<div class="allInformation">
+		<h1 id="accountInfoID"></h1>
+		<h4>(Use this to sign in!)</h4>
+		
+		<h1 id="accountInfoName"></h1>
+		<button class="updateButtons" id = "nameButton" onclick="location.href='#namePopup'"><h3>Update Name</h3></button>
+			
+		<h1 id="accountInfoEmail"></h1>
+		<button class="updateButtons" id = "emailButton" onclick="location.href='#emailPopup'"><h3>Update Email</h3></button>
+		
+		<h1 id="accountInfoBalance"></h1>
+		
+		<h1 id="accountInfoPassword">Password: ******</h1>
+		<button class="eye-icon" onclick="togglePassword()">👁️</button>
+		<button class="updateButtons" id = "passwordButton" onclick="location.href='#passwordPopup'"><h3>Update Password</h3></button>
+	</div>
+	
+	<div id = "namePopup" class = "namePopup">
+        <div class="popupBar">
+            <h1 id = "updateTitle">Update Name</h1>
+            <button id="xButton" onclick="location.href='#'">X</button>
+        </div>
+        <form action="/updateName" method="post">
+            <input class="popupEntry" type="text" placeholder="New Name" name="newName" required>
+            <button id="enterButton" type="submit">Enter</button>
+        </form>
+    </div>
+	
+	<div id = "emailPopup" class = "emailPopup">
+        <div class="popupBar">
+            <h1 id = "updateTitle">Update Email</h1>
+            <button id="xButton" onclick="emailXButton()">X</button>
+        </div>
+        <form id="emailForm" action="/updateEmail" method="post">
+            <input class="popupEntry" type="text" placeholder="New Email" name="newEmail" id="newEmail" required>
+			 <button type="button" id="sendEmail">️️Send Verification Email</button>
+			 <div id="codes">
+				<input class = "codeEntry" type="number" step="1" min="0" max="9" placeholder="-" id="codeEntry1">
+				 <input class = "codeEntry" type="number" step="1" min="0" max="9" placeholder="-" id="codeEntry2">
+				 <input class = "codeEntry" type="number" step="1" min="0" max="9" placeholder="-" id="codeEntry3">
+				 <input class = "codeEntry" type="number" step="1" min="0" max="9" placeholder="-" id="codeEntry4">
+				 <input class = "codeEntry" type="number" step="1" min="0" max="9" placeholder="-" id="codeEntry5">
+				 <input class = "codeEntry" type="number" step="1" min="0" max="9" placeholder="-" id="codeEntry6">
+				 <button type="button" id="submitCode">️️Submit Code</button>
+			 </div>
+            <button id="enterButton" type="submit">Enter</button>
+        </form>
+    </div>
+	
+	<div id = "passwordPopup" class = "passwordPopup">
+        <div class="popupBar">
+            <h1 id = "updateTitle">Update Password</h1>
+            <button id="xButton" onclick="location.href='#'">X</button>
+        </div>
+        <form action="/updatePassword" method="post">
+            <input id="passwordPopupEntry" type="password" placeholder="New Password" name="newPassword" required>
+			<button type="button" class="eye-icon-new" onclick="toggleNewPassword()">👁️</button>
+            <button style="margin-top: 10px" id="enterButton" type="submit">Enter</button>
+        </form>
+    </div>
+    
+</body>
+</html>
