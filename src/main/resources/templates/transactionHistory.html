@@ -251,6 +251,11 @@
 		.updateDetails input, .updateDetails select{
 			margin-bottom: 15px;
 		}
+		
+		#prevInfoDep, #prevInfoWith {
+			text-align: center;
+		}
+		
         #updateDepositEnterButton {
             cursor: pointer;
             font-size:larger;
@@ -783,7 +788,9 @@
 			    if (oldAmount.startsWith("+")) {
 			        const popup = document.getElementById('editDepositPopup');
 			        popup.style.display = 'block';
-			        document.getElementById('prevInfoDep').innerText = `Previous Info- Date: ${oldDate}, Type: ${oldType}, Amount: ${oldAmount}`;
+					
+					// Displays old transaction informaiton
+			        document.getElementById('prevInfoDep').innerText = `Previous Info- Date: ${oldDate}, Type: ${oldType}, Amount: ${oldAmount}, Description: ${oldDescription}`;
 
 			        const form = document.getElementById('editDepositForm');
 			        form.removeEventListener('submit', handleDepositSubmit);
@@ -841,7 +848,9 @@
 			    else {
 			        const popup = document.getElementById('editWithdrawalPopup');
 			        popup.style.display = 'block';
-			        document.getElementById('prevInfoWith').innerText = `Previous Info- Date: ${oldDate}, Type: ${oldType}, Amount: ${oldAmount}`;
+					
+					// Displays old transaction informaiton
+			        document.getElementById('prevInfoWith').innerText = `Previous Info- Date: ${oldDate}, Type: ${oldType}, Amount: ${oldAmount}, Description: ${oldDescription}`;
 
 			        const form = document.getElementById('editWithdrawalForm');
 			        form.removeEventListener('submit', handleWithdrawSubmit); 
@@ -950,6 +959,7 @@
 				
 			}
 			
+			// Highlights whichever button is selected for the reports
 			function highlightSelectedButton(selectedButton) {
 			    const buttons = document.querySelectorAll('.filterButtons');
 			    buttons.forEach(button => button.classList.remove('active'));
@@ -966,7 +976,8 @@
 				const popup = document.getElementById('editWithdrawalPopup');
 				popup.style.display = 'none';
 			}
-
+			
+			// Fetches all transactions when the page opens
 	        window.onload = function() {
 	            fetchAccountData();
 				fetchAllTransactions(document.getElementById('allTransactionsButton'));
