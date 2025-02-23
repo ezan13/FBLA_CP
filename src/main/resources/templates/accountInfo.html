@@ -275,6 +275,7 @@
 
 		    if (sendEmail) {
 		        sendEmail.addEventListener('click', async function () {
+					// Checks if user entered an email
 		            if (!newEmail.value) {
 		                alert("Please enter an email address first.");
 		                return;
@@ -332,6 +333,7 @@
 		    const submitCodeButton = document.getElementById('submitCode');
 
 		    if (submitCodeButton) {
+				// Accesses the code that the user entered
 		        submitCodeButton.addEventListener('click', function () {
 		            const enteredCode = [
 		                document.getElementById('codeEntry1').value,
@@ -349,6 +351,7 @@
 		                return;
 		            }
 					
+					// Verifies that the code inputted is correct
 		            if (enteredCode === generatedCode) {
 		                emailVerified = true;
 		                alert('Email verified successfully!');
@@ -375,7 +378,7 @@
 		    }
 		});
 		
-		//resets email code entry
+		// Resets email code entry
 		function emailXButton(){
 			location.href='#';
 			sendEmail.style.display = 'block';
