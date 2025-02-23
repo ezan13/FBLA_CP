@@ -164,7 +164,7 @@
 		    if (question && qnaSubmit) {
 		        qnaSubmit.addEventListener('click', function () {
 		            const params = {
-		                question: question.value, // Use `.value` to get input field content
+		                question: question.value,
 		            };
 
 		            const queryString = new URLSearchParams(params).toString();
@@ -179,8 +179,8 @@
 		                    responseBox.innerHTML = '';
 
 		                    data.forEach(response => {
-		                        const row = document.createElement('div'); // Use a div or other appropriate element
-		                        row.classList.add('response-row'); // Optional: Add a class for styling
+		                        const row = document.createElement('div');
+		                        row.classList.add('response-row');
 								
 		                        if (response === "deposit") {
 		                            const redirectButton = document.createElement('button');
