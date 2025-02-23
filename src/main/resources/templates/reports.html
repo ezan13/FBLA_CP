@@ -232,6 +232,7 @@
 		let withAmountChart = null;
 		let depositTypeChart = null;
 		let withTypeChart = null;
+		
 		//Calls the web mapping /getName and /getBalance and puts information onto page when page is loaded
 		function fetchAccountData() {
 		    // Fetch account name
@@ -249,6 +250,8 @@
 		            document.getElementById('accountName').innerText = "Error loading name";
 		        });
 		}
+		
+		// Gets the current date using the Date function
 		function getCurrentDate(){
 			const date = new Date();
 			let day = date.getDate();
@@ -258,11 +261,14 @@
 			return currentDate;
 		}
 		
+		// Main function for tetching reports by calling the /getReport... web annotaions
 		function fetchReport(time){
 			let date1;
 			let date2;
 			let endDay;
 			let startDay;
+			
+			// Creates the date range based on what type of report it is (week, month, or selected date range)
 			if(time === "week"){
 				highlightSelectedButton(document.getElementById('weeklyButton'));
 				endDay = getCurrentDate();
@@ -279,6 +285,8 @@
 				date1 = new Date(date2);
 				date1.setDate(date2.getDate() - 30);
 			}
+			
+			// Retrieves the start and end dates for the report
 			else if(time==="selectDate"){
 				const input1 = document.getElementById('startDate').value;
 				const input2 = document.getElementById('endDate').value;
@@ -323,7 +331,10 @@
 			let hasWithdrawals;
 			
 			
-			// Creates the reports
+			/* Checks if there are deposits/withdrawals in the date range
+			* If there aren't, displays "No deposits/withdrawals"
+			* If there are, creates a chart based on information received from Springboot methods
+			*/
 			fetch(`/hasDepositsWithdrawals?${queryString}`)
 				.then(response => response.json())
 			    .then(data => {
@@ -445,6 +456,7 @@
 							
 					}
 					else{
+						// If there are no deposits in the date range
 						document.getElementById('depAmtError').innerText = "No deposits to display in the given date range";
 						document.getElementById('depTypeError').innerText = "No deposits to display in the given date range";
 					}
@@ -452,7 +464,6 @@
 						const withAmts = [];
 						const withNums = [];
 
-						// Fetch both reports
 						const fetchAmounts = fetch(`/getReportAmountWith?${queryString}`)
 						    .then(response => response.json())
 						    .then(data => {
@@ -554,10 +565,12 @@
 						// Waits until both fetch calls are complete
 						Promise.all([fetchAmounts, fetchTypes])
 						    .then(() => {
+								
+								// Calculates average spendings based on amounts and number of withdrawals 
 						        const withAverages = [];
 						        let withString = "";
 						        for (let i = 0; i <= 4; i++) {
-									if(withNums[i] === 0){
+									if(withNums[i] === 0){ // Prevents division by 0
 										withAverages[i] = 0;
 									}
 									else{
@@ -570,6 +583,8 @@
 						        withString += "Average spent on rent: " + withAverages[2] + "\n";
 						        withString += "Average spent on friends: " + withAverages[3] + "\n";
 						        withString += "Average spent on other: " + withAverages[4];
+								
+								// Displays withdrawal averages
 						        document.getElementById('withAverages').innerText = withString;
 						    })
 						    .catch(error => {
@@ -578,6 +593,7 @@
 
 					}
 					else{
+						// If there are no withdrawals in the date range
 						document.getElementById('withAmtError').innerText = "No withdrawals to display in the given date range";
 						document.getElementById('withTypeError').innerText = "No withdrawals to display in the given date range";
 						document.getElementById('withAverages').innerText = "";
@@ -591,7 +607,7 @@
 			}
 			
 			
-			
+		// Highlights whichever button is selected for the reports
 		function highlightSelectedButton(selectedButton) {
 		    const buttons = document.querySelectorAll('.reportButtons');
 		    buttons.forEach(button => button.classList.remove('active'));
@@ -599,6 +615,7 @@
 		    selectedButton.classList.add('active');
 		}
 		
+		// Fetches the weekly report when the page is loaded
         window.onload = function() {
             fetchAccountData();
 			fetchReport("week");
